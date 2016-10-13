@@ -15,10 +15,8 @@ main: .global main
 	mov $lista,    %ebx
 	mov longlista, %ecx
 	call suma
-	mov %eax, resultado
-	//Nuevo resultado 
-	//sal resultado,32
-	//add %edi, resultado
+	mov %edi, resultado+32
+	add %eax, resultado
 
 	
 	push resultado
@@ -38,6 +36,7 @@ suma:
 	push %edx
 	mov $0, %eax
 	mov $0, %edx
+	mov $0, %edi
 
 bucle:
 	adc (%ebx,%edx,4),%eax
