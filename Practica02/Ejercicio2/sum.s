@@ -1,6 +1,6 @@
 .section .data
 lista:
-	#.int 1,2,10, 1,2,0b10, 1,2,0x10
+	#.int  1,2,10, 1,2,0b10, 1,2,0x10
 	.int 1,-1,1,1,-1,1,1,1,1
 longlista:
 	.int (.-lista)/4
@@ -49,7 +49,8 @@ bucle:
 
  	adc $0,%edi  #caso no negativo 
 
-siNega:	add $-1,%edi
+siNega:	#add $-1,%eax
+	adc $0,%eax
 	adc $0,%edi      
 	
 sinC:	inc %edx
