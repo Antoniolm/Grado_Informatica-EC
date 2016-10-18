@@ -1,7 +1,11 @@
 .section .data
 lista:
-	.int  1,2,10, 1,2,0b10, 1,2,0x10
+	#.int  1,2,10, 1,2,0b10, 1,2,0x10
 	#.int 1,-1,1,1,-1,1,1,1,1
+	#.int -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
+
+	#.int 1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2
+	.int 1,2,-3,-4,1,2,-3,-4,1,2,-3,-4,1,2,-3,-4,1,2,-3,-4,1,2,-3,-4,1,2,-3,-4,1,2,-3,-4
 longlista:
 	.int (.-lista)/4
 resultado:
@@ -17,7 +21,7 @@ main: .global main
 	mov longlista, %ecx
 	call suma
 	mov %edi, resultado+4
-	mov %eax, resultado
+	mov %esi, resultado
 	
 	pushl resultado+4
 	pushl resultado
@@ -36,25 +40,20 @@ main: .global main
 
 suma:
 	push %edx
-	mov $0, %eax
-	mov $0, %edx
-	mov $0, %edi
+	mov $0, %edx #mas   significativo sin acumular
+	mov $0, %eax #menos significativo sin acumular
+	mov $0, %ebp #contador del bucle
+	mov $0, %edi #mas   significativo acumulado
+	mov $0, %esi #menos significativo acumulado
 
 bucle:
-	add (%ebx,%edx,4),%eax
-	jnc sinC
-		
-	cmp $0,(%ebx,%edx,4)
-	jg siNega
-
- 	adc $0,%edi  #caso no negativo 
-
-siNega:	#add $-1,%eax
-	adc $0,%eax
-	adc $0,%edi      
+	mov (%ebx,%ebp,4),%eax
+	cdq  
+	add %eax,%esi
+	adc %edx,%edi
 	
-sinC:	inc %edx
-	cmp %edx,%ecx
+	inc %ebp
+	cmp %ebp,%ecx
 	jne bucle
 
 	pop %edx
