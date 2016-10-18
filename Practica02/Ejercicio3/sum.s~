@@ -4,17 +4,17 @@ lista:
 	#.int 1,-1,1,1,-1,1,1,1,1
 	#.int -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
 
-	#.int 1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2
-	.int 1,2,-3,-4,1,2,-3,-4,1,2,-3,-4,1,2,-3,-4,1,2,-3,-4,1,2,-3,-4,1,2,-3,-4,1,2,-3,-4
+	.int 1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2,1,-2
+	#.int 1,2,-3,-4,1,2,-3,-4,1,2,-3,-4,1,2,-3,-4,1,2,-3,-4,1,2,-3,-4,1,2,-3,-4,1,2,-3,-4
 longlista:
 	.int (.-lista)/4
-resultado:
-	.quad 0x01234567
+cociente:
+	.int 0x01234567
 resto:
-	.quad 0x01234220
+	.int 0x01234220
 
 formato:
-	.ascii "Cociente : %8d , Resto : %8d \n\0"
+	.ascii "Cociente : %8d -> 0x%08x hex \n Resto : %8d -> 0x%08x hex \n\0"
 
 .section .text
 main: .global main
@@ -22,16 +22,16 @@ main: .global main
 	mov $lista,    %ebx
 	mov longlista, %ecx
 	call suma
-	mov %edx, resto
-	mov %eax, resultado
+	mov %edi, resto
+	mov %eax, cociente
 	
-	#pushl resultado+4
-	pushl resultado
-	#pushl resultado+4
-	pushl resultado
+	pushl resto
+	pushl resto
+	pushl cociente
+	pushl cociente
 	push $formato
 	call printf
-	add $12,%esp
+	add $20,%esp
 
 	mov $1, %eax
 	mov $0, %ebx
@@ -58,10 +58,11 @@ bucle:
 	cmp %ebp,%ecx
 	jne bucle
 
-	# new
-	mov %esi,%eax
+	mov %esi,%eax	# Realizamos estos mov ya que idiv necesita el dividendo en %edx:%eax
 	mov %edi,%edx
-	idiv %ecx
+	idiv %ecx	# %edx:%eax/%ecx  = Resto-> %edx Cociente-> %eax
+
+	mov %edx,%edi #guardamos nuestro resto ya que debido al pop perderiamos el valor
 
 	pop %edx
 	ret
