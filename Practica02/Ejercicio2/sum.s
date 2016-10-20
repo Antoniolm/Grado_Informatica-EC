@@ -20,37 +20,36 @@ main: .global main
 	mov $lista,    %ebx
 	mov longlista, %ecx
 	call suma
-	mov %edi, resultado+4
-	mov %esi, resultado
+	mov %edi, resultado+4	#Obtenemos la suma acumulada
+	mov %esi, resultado	#Y la introducimos en la variable resultado
 	
-	pushl resultado+4
-	pushl resultado
+	pushl resultado+4	#Realizamos los push necesarias para realizar un printf con
+	pushl resultado		#Valores de 64bits
 	pushl resultado+4
 	pushl resultado
 	push $formato
-	call printf
+	call printf		#Realizamos la impresión del resultados
 	add $20,%esp
 
-	mov $1, %eax
+	mov $1, %eax		#Ponemos los valores necesarias para realizar la salida del programa
 	mov $0, %ebx
-	mov $0, %edi 
 
-	int $0x80
+	int $0x80		#Realizamos la salida del programa
 
 
 suma:
 	push %edx
-	mov $0, %edx #mas   significativo sin acumular
-	mov $0, %eax #menos significativo sin acumular
-	mov $0, %ebp #contador del bucle
-	mov $0, %edi #mas   significativo acumulado
-	mov $0, %esi #menos significativo acumulado
+	mov $0, %edx 	#mas   significativo sin acumular
+	mov $0, %eax 	#menos significativo sin acumular
+	mov $0, %ebp 	#contador del bucle
+	mov $0, %edi 	#mas   significativo acumulado
+	mov $0, %esi 	#menos significativo acumulado
 
 bucle:
-	mov (%ebx,%ebp,4),%eax
-	cdq  
-	add %eax,%esi
-	adc %edx,%edi
+	mov (%ebx,%ebp,4),%eax	#Movemos el elemento actual de la lista
+	cdq  			#Realizamos la instruccion y nos introduce los valores
+	add %eax,%esi		#resultantes en eax y edx
+	adc %edx,%edi		#Acumulamos ambos valores
 	
 	inc %ebp
 	cmp %ebp,%ecx
