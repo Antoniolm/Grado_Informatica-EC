@@ -47,7 +47,7 @@ suma:
 
 bucle:
 	mov (%ebx,%ebp,4),%eax	#Movemos el elemento actual de la lista
-	cdq  			#Realizamos la instruccion y nos introduce los valores
+	cdq  			#Realizamos la instruccion cdq y nos introduce los valores
 	add %eax,%esi		#resultantes en eax y edx
 	adc %edx,%edi		#Acumulamos ambos valores
 	

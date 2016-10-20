@@ -22,37 +22,36 @@ main: .global main
 	mov $lista,    %ebx
 	mov longlista, %ecx
 	call suma
-	mov %edi, resto
-	mov %eax, cociente
+	mov %edi, resto		#Introducimos el resto en la variable
+	mov %eax, cociente	#Introducimos el cociente en la variable
 	
-	pushl resto
-	pushl resto
+	pushl resto		#Realizamos los push necesarias para realizar un printf
+	pushl resto		#Tanto del cociente como del resto
 	pushl cociente
 	pushl cociente
 	push $formato
-	call printf
+	call printf		#Realizamos la impresión del resultados
 	add $20,%esp
 
-	mov $1, %eax
+	mov $1, %eax		#Ponemos los valores necesarias para realizar la salida del programa
 	mov $0, %ebx
-	mov $0, %edi 
 
-	int $0x80
+	int $0x80		#Realizamos la salida del programa
 
 
 suma:
 	push %edx
-	mov $0, %edx #mas   significativo sin acumular
-	mov $0, %eax #menos significativo sin acumular
-	mov $0, %ebp #contador del bucle
-	mov $0, %edi #mas   significativo acumulado
-	mov $0, %esi #menos significativo acumulado
+	mov $0, %edx 	#mas   significativo sin acumular
+	mov $0, %eax 	#menos significativo sin acumular
+	mov $0, %ebp 	#contador del bucle
+	mov $0, %edi 	#mas   significativo acumulado
+	mov $0, %esi 	#menos significativo acumulado
 
 bucle:
-	mov (%ebx,%ebp,4),%eax
-	cdq  
-	add %eax,%esi
-	adc %edx,%edi
+	mov (%ebx,%ebp,4),%eax	#Movemos el elemento actual de la lista
+	cdq  			#Realizamos la instruccion cdq y nos introduce los valores
+	add %eax,%esi		#resultantes en eax y edx
+	adc %edx,%edi		#Acumulamos ambos valores
 	
 	inc %ebp
 	cmp %ebp,%ecx
@@ -62,7 +61,7 @@ bucle:
 	mov %edi,%edx
 	idiv %ecx	# %edx:%eax/%ecx  = Resto-> %edx Cociente-> %eax
 
-	mov %edx,%edi #guardamos nuestro resto ya que debido al pop perderiamos el valor
+	mov %edx,%edi 	#guardamos nuestro resto ya que debido al pop perderiamos el valor
 
 	pop %edx
 	ret
