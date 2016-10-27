@@ -29,11 +29,11 @@ formato:
 .section .text
 main: .global main
 
-	mov $lista,    %ebx
-	mov longlista, %ecx
-	call suma
+	mov $lista,    %ebx		#Introducimos en el registro ebx la lista de elementos
+	mov longlista, %ecx		#Introducimos en el registro ecx el tamaño de la lista de elementos
+	call suma				#Llamada al metodo suma
 	mov %edi, resultado+4	#Obtenemos la suma acumulada
-	mov %esi, resultado	#Y la introducimos en la variable resultado
+	mov %esi, resultado		#Y la introducimos en la variable resultado
 	
 	pushl resultado+4	#Realizamos los push necesarias para realizar un printf con
 	pushl resultado		#Valores de 64bits

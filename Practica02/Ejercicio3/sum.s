@@ -31,9 +31,9 @@ formato:
 .section .text
 main: .global main
 
-	mov $lista,    %ebx
-	mov longlista, %ecx
-	call suma
+	mov $lista,    %ebx	#Introducimos en el registro ebx la lista de elementos
+	mov longlista, %ecx	#Introducimos en el registro ecx el tamaño de la lista de elementos
+	call suma			#Llamada al metodo suma
 	mov %edi, resto		#Introducimos el resto en la variable
 	mov %eax, cociente	#Introducimos el cociente en la variable
 	
@@ -51,6 +51,11 @@ main: .global main
 	int $0x80		#Realizamos la salida del programa
 
 
+######################################################
+# Método que realiza la suma con signo de un conjunto de elementos 
+# y realiza su media
+# Devuelve el cociente y el resto de la media
+####################################################
 suma:
 	push %edx
 	mov $0, %edx 	#mas   significativo sin acumular
@@ -65,9 +70,9 @@ bucle:
 	add %eax,%esi		#resultantes en eax y edx
 	adc %edx,%edi		#Acumulamos ambos valores
 	
-	inc %ebp
-	cmp %ebp,%ecx
-	jne bucle
+	inc %ebp			#Incrementamos el contador
+	cmp %ebp,%ecx		#Comparamos nuestro contador
+	jne bucle			#Si no ha llegado al final vuelve a empezar en la etiqueta bucle:
 
 	mov %esi,%eax	# Realizamos estos mov ya que idiv necesita el dividendo en %edx:%eax
 	mov %edi,%edx
