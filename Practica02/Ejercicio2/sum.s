@@ -1,3 +1,10 @@
+###################################################
+#
+#	Antonio David López Machado - Curso 2016/2017
+#	Practica-2 Ejercicio 2
+#
+###################################################
+
 .section .data
 	.macro linea
 		#.int  1,2,10, 1,2,0b10, 1,2,0x10
@@ -41,7 +48,11 @@ main: .global main
 
 	int $0x80		#Realizamos la salida del programa
 
-
+######################################################
+# Método que realiza la suma con signo de un conjunto de elementos 
+# pasados como parametro
+# Devuelve la suma total de todos los elementos
+####################################################
 suma:
 	push %edx
 	mov $0, %edx 	#mas   significativo sin acumular
@@ -52,14 +63,13 @@ suma:
 
 bucle:
 	mov (%ebx,%ebp,4),%eax	#Movemos el elemento actual de la lista
-	cdq  			#Realizamos la instruccion cdq y nos introduce los valores
-	add %eax,%esi		#resultantes en eax y edx
-	adc %edx,%edi		#Acumulamos ambos valores
+	cdq  					#Realizamos la instruccion cdq y nos introduce los valores
+	add %eax,%esi			#resltantes en eax y edx
+	adc %edx,%edi			#Acumulamos ambos valores
 	
-	inc %ebp
+	inc %ebp				#Incrementamos el contador
 	cmp %ebp,%ecx
 	jne bucle
 
 	pop %edx
 	ret
-
