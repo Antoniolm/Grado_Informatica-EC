@@ -63,15 +63,15 @@ suma:
 	mov $0, %edi
 
 bucle:
-	add (%ebx,%edx,4),%eax  	#Realizamos la suma del elemento de la lista
-	jnc sinC			#Saltamos a la etiquet sinC cuando no se produzca acarreo
-	add $1,%edi			#Caso -> Con carrero
-						#Añadimos el carrero al registro con los valores mas significativos(%edi)
+	add (%ebx,%edx,4),%eax  #Realizamos la suma del elemento de la lista
+	jnc sinC				#Saltamos a la etiquet sinC cuando no se produzca acarreo
+	add $1,%edi				#Caso -> Con carrero
+							#Añadimos el carrero al registro con los valores mas significativos(%edi)
 	
 sinC:	inc %edx			#Incrementamos el contador
 	cmp %edx,%ecx			#Comparamos nuestro contador
-	jne bucle			#Si no ha llegado al final vuelve a empezar en la etiqueta bucle:
+	jne bucle				#Si no ha llegado al final vuelve a empezar en la etiqueta bucle:
 
 	pop %edx
-	ret
+	ret 					
 

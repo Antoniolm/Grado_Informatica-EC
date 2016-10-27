@@ -68,8 +68,8 @@ bucle:
 	adc %edx,%edi			#Acumulamos ambos valores
 	
 	inc %ebp				#Incrementamos el contador
-	cmp %ebp,%ecx
-	jne bucle
+	cmp %ebp,%ecx			#Comparamos nuestro contador
+	jne bucle				#Si no ha llegado al final vuelve a empezar en la etiqueta bucle:
 
 	pop %edx
 	ret
