@@ -77,6 +77,31 @@ int parityCount4(int* array, int len)
     return res;
 }
 
+int parityCount5(int* array, int len)
+{
+    int  i,j,  res=0,result,val;
+    unsigned x;
+    for (i=0; i<len; i++){
+        result = 0;
+        val=0;
+        x=array[i];
+        /*for (j = 16; j > 0; j/=2) {
+        //    val += x & 0x0101010101010101L;
+        //    x >>= 1;
+            x ^= (x >> 16);
+        }*/
+        
+        x ^= (x >> 16);
+        x ^= (x >> 8);
+        x ^= (x >> 4);
+        x ^= (x >> 2);
+        x ^= (x >> 1);
+
+        res+=x & 0x1;
+    }
+    return res;
+}
+
 void crono(int (*func)(), char* msg){
     struct timeval tv1,tv2;	// gettimeofday() secs-usecs
     long           tv_usecs;	// y sus cuentas
@@ -101,6 +126,7 @@ int main()
     crono(parityCount2, "parityCount2 (en lenguaje C    )");
     crono(parityCount3, "parityCount3 (en lenguaje C    )");
     crono(parityCount4, "parityCount4 (en lenguaje C    )");
+    crono(parityCount5, "parityCount5 (en lenguaje C    )");
 
     printf("N*(N+1)/2 = %d\n", (SIZE-1)*(SIZE/2)); /*OF*/
 
