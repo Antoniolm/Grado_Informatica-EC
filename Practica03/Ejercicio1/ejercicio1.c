@@ -8,12 +8,12 @@
 #define SIZE (1<<16)	// tamaño suficiente para tiempo apreciable
 #define WSIZE 8*sizeof(unsigned)
 //unsigned lista[SIZE];
-//unsigned lista[SIZE]={0x80000000,0x00100000,0x00000800,0x00000001};
-unsigned lista[SIZE]={0x7fffffff,0xffefffff,0xfffff7ff,0xfffffffe,0x10000024,0x00356700,0x8900ac00,0x00bd00ef};
-//unsigned lista[SIZE]={};
+unsigned lista[SIZE]={0x80000000,0x00100000,0x00000800,0x00000001};
+//unsigned lista[SIZE]={0x7fffffff,0xffefffff,0xfffff7ff,0xfffffffe,0x10000024,0x00356700,0x8900ac00,0x00bd00ef};
+//unsigned lista[SIZE]={0x0,0x10204080,0x3590ac06,0x70b0d0e0,0xffffffff,0x12345678,0x9abcdef0,0xcafebeef};
 int resultado=0;
 
-int suma1(int* array, int len)
+int popCount1(int* array, int len)
 {
     int  i,j,  res=0,result;
     for (i=0; i<len; i++){
@@ -23,12 +23,11 @@ int suma1(int* array, int len)
             result += (array[i] & mask) != 0;
         }
         res+=result;
-	 //res += array[i];
     }
     return res;
 }
 
-int sumaB(int* array, int len)
+int popCount2(int* array, int len)
 {
     int  i,j,  res=0,result;
     for (i=0; i<len; i++){
@@ -39,12 +38,11 @@ int sumaB(int* array, int len)
             value >>= 1;
         }while(value);
         res+=result;
-     //res += array[i];
     }
     return res;
 }
 
-int sumaC(int* array, int len)
+int popCount3(int* array, int len)
 {
     int  i,j,  res=0,result;
     for (i=0; i<len; i++){
@@ -59,39 +57,29 @@ int sumaC(int* array, int len)
             :  [x]  "r" (x)  );     // input
         
         res+=result;
-     //res += array[i];
     }
     return res;
 }
 
-int suma2(int* array, int len)
-{
-    int  i,  res=0;
-    for (i=0; i<len; i++)
-    asm("add (%[a],%[i],4),%[r]	\n"
-     :	[r] "+r" (res)		// output-input
-     :	[i]  "r" (i),		// input
-	[a]  "r" (array)
-    );
-    return res;
-}
 
-int suma3(int* array, int len)
+int popCount4(int* array, int len)
 {
-    asm("mov 8(%%ebp), %%ebx	\n"  // array
-"	mov 12(%%ebp), %%ecx	    \n"  // len
-"				                \n"
-"	mov $0, %%eax		        \n"  // retval
-"	mov $0, %%edx		        \n"  // index
-"bucle:				\n"
-"	add (%%ebx,%%edx,4),%%eax   \n"
-"	inc       %%edx		        \n"
-"	cmp %%edx,%%ecx		        \n"
-"	jne bucle		            \n"
-     : 				// output
-     : 				// input
-     :	"ebx"			// clobber
-    );
+    int  i,j,  res=0,result,val;
+    unsigned x;
+    for (i=0; i<len; i++){
+        result = 0;
+        val=0;
+        x=array[i];
+        for (j = 0; j < 8;j++) {
+            val += x & 0x0101010101010101L;
+            x >>= 1;
+        }
+        
+        val += (val >> 16);
+        val += (val >> 8);
+        res+=val & 0xFF;
+    }
+    return res;
 }
 
 void crono(int (*func)(), char* msg){
@@ -114,11 +102,11 @@ int main()
     //for (i=0; i<SIZE; i++)	// se queda en cache
 	 //lista[i]=i;
 
-    crono(suma1, "suma1 (en lenguaje C    )");
-    crono(sumaB, "sumaB (en lenguaje C    )");
-    crono(sumaC, "sumaC (en lenguaje C    )");
-    crono(suma2, "suma2 (1 instrucción asm)");
-    crono(suma3, "suma3 (bloque asm entero)");
+    crono(popCount1, "popCount1 (en lenguaje C    )");
+    crono(popCount2, "popCount2 (en lenguaje C    )");
+    crono(popCount3, "popCount3 (en lenguaje C    )");
+    crono(popCount4, "popCount4 (en lenguaje C    )");
+
     printf("N*(N+1)/2 = %d\n", (SIZE-1)*(SIZE/2)); /*OF*/
 
     exit(0);
