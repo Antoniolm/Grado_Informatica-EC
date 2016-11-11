@@ -8,12 +8,12 @@
 #define SIZE (1<<16)	// tamaño suficiente para tiempo apreciable
 #define WSIZE 8*sizeof(unsigned)
 //unsigned lista[SIZE];
-unsigned lista[SIZE]={0x80000000,0x00100000,0x00000800,0x00000001};
+//unsigned lista[SIZE]={0x80000000,0x00100000,0x00000800,0x00000001};
 //unsigned lista[SIZE]={0x7fffffff,0xffefffff,0xfffff7ff,0xfffffffe,0x10000024,0x00356700,0x8900ac00,0x00bd00ef};
-//unsigned lista[SIZE]={0x0,0x10204080,0x3590ac06,0x70b0d0e0,0xffffffff,0x12345678,0x9abcdef0,0xcafebeef};
+unsigned lista[SIZE]={0x0,0x10204080,0x3590ac06,0x70b0d0e0,0xffffffff,0x12345678,0x9abcdef0,0xcafebeef};
 int resultado=0;
 
-int popCount1(int* array, int len)
+int parityCount1(int* array, int len)
 {
     int  i,j,  res=0,result;
     for (i=0; i<len; i++){
@@ -27,7 +27,7 @@ int popCount1(int* array, int len)
     return res;
 }
 
-int popCount2(int* array, int len)
+int parityCount2(int* array, int len)
 {
     int  i,j,  res=0,result;
     for (i=0; i<len; i++){
@@ -42,24 +42,26 @@ int popCount2(int* array, int len)
     return res;
 }
 
-int popCount3(int* array, int len)
+int parityCount3(int* array, int len)
 {
     int  i,j,  res=0,result;
     for (i=0; i<len; i++){
         result = 0;
-        unsigned x=array[i];
-        asm("ini3:               \n\t"
-            "shr %[x]            \n\t"
-            "adc $0,%[r]    \n\t"
-            "cmp $0,%[x]         \n\t"
-            "jne ini3            \n\t"
-            :  [r]"+r" (result)      // output-input
-            :  [x]  "r" (x)  );     // input
-        
-        res+=result;
+        unsigned value=array[i];
+        while(value){
+            result^= value;
+            value >>= 1;
+        }
+        res+=result & 0x1;
     }
     return res;
 }
+/*int val = 0;
+while (x) {
+val ^= x;
+x >>= 1;
+}
+return val & 0x1;*/
 
 
 int popCount4(int* array, int len)
@@ -102,9 +104,9 @@ int main()
     //for (i=0; i<SIZE; i++)	// se queda en cache
 	 //lista[i]=i;
 
-    crono(popCount1, "popCount1 (en lenguaje C    )");
-    crono(popCount2, "popCount2 (en lenguaje C    )");
-    crono(popCount3, "popCount3 (en lenguaje C    )");
+    crono(parityCount1, "popCount1 (en lenguaje C    )");
+    crono(parityCount2, "popCount2 (en lenguaje C    )");
+    crono(parityCount3, "popCount3 (en lenguaje C    )");
     crono(popCount4, "popCount4 (en lenguaje C    )");
 
     printf("N*(N+1)/2 = %d\n", (SIZE-1)*(SIZE/2)); /*OF*/
