@@ -82,6 +82,43 @@ int popCount4(int* array, int len)
     return res;
 }
 
+int popCount5(int* array, int len)
+{
+    int i;
+    int val,result=0;
+    int SSE_mask[] = {0x0f0f0f0f,0x0f0f0f0f,0x0f0f0f0f,0x0f0f0f0f};
+    int SSE_LUTb[] = {0x02010100,0x03020201,0x03020201,0x04030302};
+
+    for(i=0;i<len;i+=4){
+        asm("movdqu %[x]   ,%%xmm0  \n\t"
+            "movdqa %%xmm0 ,%%xmm1  \n\t"
+            "movdqu %[m]   ,%%xmm0  \n\t"
+            "psrlw  $4     ,%%xmm1  \n\t"
+            "pand   %%xmm6 ,%%xmm0  \n\t"
+            "pand   %%xmm6 ,%%xmm1  \n\t"
+
+            "movdqu %[l]   ,%%xmm0 \n\t" //xmm2?
+            "movdqa %%xmm2 ,%%xmm3  \n\t"
+            "pshufb %%xmm0 ,%%xmm2  \n\t"
+            "pshufb %%xmm1 ,%%xmm3  \n\t"
+
+            "paddb   %%xmm3, %%xmm4 \n\t"
+            "pxor    %%xmm0, %%xmm0 \n\t"
+            "psadbw  %%xmm0, %%xmm3 \n\t"
+            "movhlps %%xmm4, %%xmm0 \n\t"
+            "paddd   %%xmm4, %%xmm0 \n\t"
+            "movd    %%xmm0, %[val] \n\t"
+            : [val] "=r" (val)
+            :   [x] "m" (array[i]),
+                [m] "m" (SSE_mask[0]),
+                [l] "m" (SSE_LUTb[0])
+
+            );
+                result+=val;
+    }
+    return result;
+}
+
 void crono(int (*func)(), char* msg){
     struct timeval tv1,tv2;	// gettimeofday() secs-usecs
     long           tv_usecs;	// y sus cuentas
@@ -106,6 +143,7 @@ int main()
     crono(popCount2, "popCount2 (en lenguaje C    )");
     crono(popCount3, "popCount3 (en lenguaje C    )");
     crono(popCount4, "popCount4 (en lenguaje C    )");
+    crono(popCount5, "popCount4 (en lenguaje C    )");
 
     printf("N*(N+1)/2 = %d\n", (SIZE-1)*(SIZE/2)); /*OF*/
 
