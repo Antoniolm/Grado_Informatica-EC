@@ -6,18 +6,21 @@
 #include <sys/time.h>	// para gettimeofday(), struct timeval
 
 #define SIZE (1<<16)	// tamaño suficiente para tiempo apreciable
-#define WSIZE 8*sizeof(int)
-int lista[SIZE];
+#define WSIZE 8*sizeof(unsigned)
+//unsigned lista[SIZE];
+//unsigned lista[SIZE]={0x80000000,0x00100000,0x00000800,0x00000001};
+unsigned lista[SIZE]={0x7fffffff,0xffefffff,0xfffff7ff,0xfffffffe,0x10000024,0x00356700,0x8900ac00,0x00bd00ef};
+//unsigned lista[SIZE]={};
 int resultado=0;
 
 int suma1(int* array, int len)
 {
-    int  i,j   res=0;
+    int  i,j,  res=0,result;
     for (i=0; i<len; i++){
-        int result = 0;
+        result = 0;
         for (j = 0; j < WSIZE; j++) {
             unsigned mask = 1 << j;
-            result += (x & mask) != 0;
+            result += (array[i] & mask) != 0;
         }
         res+=result;
 	 //res += array[i];
@@ -25,9 +28,45 @@ int suma1(int* array, int len)
     return res;
 }
 
+int sumaB(int* array, int len)
+{
+    int  i,j,  res=0,result;
+    for (i=0; i<len; i++){
+        result = 0;
+        unsigned value=array[i];
+        do{
+            result+= value & 0x1;
+            value >>= 1;
+        }while(value);
+        res+=result;
+     //res += array[i];
+    }
+    return res;
+}
+
+int sumaC(int* array, int len)
+{
+    int  i,j,  res=0,result;
+    for (i=0; i<len; i++){
+        result = 0;
+        unsigned x=array[i];
+        asm("ini3:               \n\t"
+            "shr %[x]            \n\t"
+            "adc $0,%[r]    \n\t"
+            "cmp $0,%[x]         \n\t"
+            "jne ini3            \n\t"
+            :  [r]"+r" (result)      // output-input
+            :  [x]  "r" (x)  );     // input
+        
+        res+=result;
+     //res += array[i];
+    }
+    return res;
+}
+
 int suma2(int* array, int len)
 {
-    int  i,   res=0;
+    int  i,  res=0;
     for (i=0; i<len; i++)
     asm("add (%[a],%[i],4),%[r]	\n"
      :	[r] "+r" (res)		// output-input
@@ -71,11 +110,13 @@ void crono(int (*func)(), char* msg){
 
 int main()
 {
-    int i;			// inicializar array
-    for (i=0; i<SIZE; i++)	// se queda en cache
-	 lista[i]=i;
+    //int i;			// inicializar array
+    //for (i=0; i<SIZE; i++)	// se queda en cache
+	 //lista[i]=i;
 
     crono(suma1, "suma1 (en lenguaje C    )");
+    crono(sumaB, "sumaB (en lenguaje C    )");
+    crono(sumaC, "sumaC (en lenguaje C    )");
     crono(suma2, "suma2 (1 instrucción asm)");
     crono(suma3, "suma3 (bloque asm entero)");
     printf("N*(N+1)/2 = %d\n", (SIZE-1)*(SIZE/2)); /*OF*/
