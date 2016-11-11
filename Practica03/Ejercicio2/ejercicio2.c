@@ -9,8 +9,8 @@
 #define WSIZE 8*sizeof(unsigned)
 //unsigned lista[SIZE];
 //unsigned lista[SIZE]={0x80000000,0x00100000,0x00000800,0x00000001};
-//unsigned lista[SIZE]={0x7fffffff,0xffefffff,0xfffff7ff,0xfffffffe,0x10000024,0x00356700,0x8900ac00,0x00bd00ef};
-unsigned lista[SIZE]={0x0,0x10204080,0x3590ac06,0x70b0d0e0,0xffffffff,0x12345678,0x9abcdef0,0xcafebeef};
+unsigned lista[SIZE]={0x7fffffff,0xffefffff,0xfffff7ff,0xfffffffe,0x10000024,0x00356700,0x8900ac00,0x00bd00ef};
+//unsigned lista[SIZE]={0x0,0x10204080,0x3590ac06,0x70b0d0e0,0xffffffff,0x12345678,0x9abcdef0,0xcafebeef};
 int resultado=0;
 
 int parityCount1(int* array, int len)
@@ -56,30 +56,23 @@ int parityCount3(int* array, int len)
     }
     return res;
 }
-/*int val = 0;
-while (x) {
-val ^= x;
-x >>= 1;
-}
-return val & 0x1;*/
 
-
-int popCount4(int* array, int len)
+int parityCount4(int* array, int len)
 {
-    int  i,j,  res=0,result,val;
+    int  i,j,  res=0,val;
     unsigned x;
     for (i=0; i<len; i++){
-        result = 0;
         val=0;
         x=array[i];
-        for (j = 0; j < 8;j++) {
-            val += x & 0x0101010101010101L;
-            x >>= 1;
-        }
-        
-        val += (val >> 16);
-        val += (val >> 8);
-        res+=val & 0xFF;
+        asm("ini3:               \n\t"
+            "xor %[x],%[v]       \n\t"
+            "shr %[x]            \n\t"
+
+            "cmp $0,%[x]         \n\t"
+            "jne ini3            \n\t"
+            :  [v]"+r" (val)      // output-input
+            :  [x]  "r" (x)  );     // input
+        res+=val & 0x1;
     }
     return res;
 }
@@ -104,10 +97,10 @@ int main()
     //for (i=0; i<SIZE; i++)	// se queda en cache
 	 //lista[i]=i;
 
-    crono(parityCount1, "popCount1 (en lenguaje C    )");
-    crono(parityCount2, "popCount2 (en lenguaje C    )");
-    crono(parityCount3, "popCount3 (en lenguaje C    )");
-    crono(popCount4, "popCount4 (en lenguaje C    )");
+    crono(parityCount1, "parityCount1 (en lenguaje C    )");
+    crono(parityCount2, "parityCount2 (en lenguaje C    )");
+    crono(parityCount3, "parityCount3 (en lenguaje C    )");
+    crono(parityCount4, "parityCount4 (en lenguaje C    )");
 
     printf("N*(N+1)/2 = %d\n", (SIZE-1)*(SIZE/2)); /*OF*/
 
