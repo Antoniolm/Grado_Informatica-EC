@@ -85,17 +85,9 @@ int parityCount5(int* array, int len)
         result = 0;
         val=0;
         x=array[i];
-        /*for (j = 16; j > 0; j/=2) {
-        //    val += x & 0x0101010101010101L;
-        //    x >>= 1;
-            x ^= (x >> 16);
-        }*/
-        
-        x ^= (x >> 16);
-        x ^= (x >> 8);
-        x ^= (x >> 4);
-        x ^= (x >> 2);
-        x ^= (x >> 1);
+        for (j = 16; j > 0; j/=2) {
+            x ^= (x >> j);
+        }
 
         res+=x & 0x1;
     }
@@ -118,9 +110,6 @@ void crono(int (*func)(), char* msg){
 
 int main()
 {
-    //int i;			// inicializar array
-    //for (i=0; i<SIZE; i++)	// se queda en cache
-	 //lista[i]=i;
 
     crono(parityCount1, "parityCount1 (en lenguaje C    )");
     crono(parityCount2, "parityCount2 (en lenguaje C    )");
@@ -128,7 +117,7 @@ int main()
     crono(parityCount4, "parityCount4 (en lenguaje C    )");
     crono(parityCount5, "parityCount5 (en lenguaje C    )");
 
-    printf("N*(N+1)/2 = %d\n", (SIZE-1)*(SIZE/2)); /*OF*/
+    printf("N*(N+1)/2 = %d\n", (SIZE-1)*(SIZE/2)); 
 
     exit(0);
 }
