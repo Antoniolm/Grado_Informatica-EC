@@ -1,18 +1,36 @@
-//  según la versión de gcc y opciones de optimización usadas, tal vez haga falta
-//  usar gcc –fno-omit-frame-pointer si gcc quitara el marco pila (%ebp)
+/////////////////////////////////////////////////////////////////
+/*
+*   Antonio David López Machado - Curso 2016/2017
+*   Practica-3 Ejercicio 1   
+*/
+/////////////////////////////////////////////////////////////////
 
 #include <stdio.h>	// para printf()
 #include <stdlib.h>	// para exit()
 #include <sys/time.h>	// para gettimeofday(), struct timeval
 
-#define SIZE (1<<16)	// tamaño suficiente para tiempo apreciable
+#define SIZE (1<<20)	// tamaño suficiente para tiempo apreciable
 #define WSIZE 8*sizeof(unsigned)
-//unsigned lista[SIZE];
-unsigned lista[SIZE]={0x80000000,0x00100000,0x00000800,0x00000001};
+unsigned lista[SIZE];
+//unsigned lista[SIZE]={0x80000000,0x00100000,0x00000800,0x00000001};
 //unsigned lista[SIZE]={0x7fffffff,0xffefffff,0xfffff7ff,0xfffffffe,0x10000024,0x00356700,0x8900ac00,0x00bd00ef};
 //unsigned lista[SIZE]={0x0,0x10204080,0x3590ac06,0x70b0d0e0,0xffffffff,0x12345678,0x9abcdef0,0xcafebeef};
 int resultado=0;
 
+
+/////////////////////////////////////////////////////////////////
+/*
+*   Metodo que realizara la suma de los bits de un conjunto de elementos
+*   pasados como parametros.
+*
+*   Versión 1 - Usando un bucle for interno
+*   
+*   \param array --> el conjunto de elementos que sumaremos
+*   \param len --> el tamaño del array
+*
+*   \return int --> resultado de la suma
+*/
+/////////////////////////////////////////////////////////////////
 int popCount1(int* array, int len)
 {
     int  i,j,  res=0,result;
@@ -27,6 +45,19 @@ int popCount1(int* array, int len)
     return res;
 }
 
+/////////////////////////////////////////////////////////////////
+/*
+*   Metodo que realizara la suma de los bits de un conjunto de elementos
+*   pasados como parametros.
+*
+*   Versión 2 - Usando un bucle while interno
+*   
+*   \param array --> el conjunto de elementos que sumaremos
+*   \param len --> el tamaño del array
+*
+*   \return int --> resultado de la suma
+*/
+/////////////////////////////////////////////////////////////////s
 int popCount2(int* array, int len)
 {
     int  i,j,  res=0,result;
@@ -42,6 +73,19 @@ int popCount2(int* array, int len)
     return res;
 }
 
+/////////////////////////////////////////////////////////////////
+/*
+*   Metodo que realizara la suma de los bits de un conjunto de elementos
+*   pasados como parametros.
+*
+*   Versión 3 - Usando un bucle while interno en ensamblador
+*   
+*   \param array --> el conjunto de elementos que sumaremos
+*   \param len --> el tamaño del array
+*
+*   \return int --> resultado de la suma
+*/
+/////////////////////////////////////////////////////////////////
 int popCount3(int* array, int len)
 {
     int  i,j,  res=0,result;
@@ -61,7 +105,19 @@ int popCount3(int* array, int len)
     return res;
 }
 
-
+/////////////////////////////////////////////////////////////////
+/*
+*   Metodo que realizara la suma de los bits de un conjunto de elementos
+*   pasados como parametros.
+*
+*   Versión 4 - CS:APP Ejercicio 3.49
+*   
+*   \param array --> el conjunto de elementos que sumaremos
+*   \param len --> el tamaño del array
+*
+*   \return int --> resultado de la suma
+*/
+/////////////////////////////////////////////////////////////////
 int popCount4(int* array, int len)
 {
     int  i,j,  res=0,result,val;
@@ -82,6 +138,19 @@ int popCount4(int* array, int len)
     return res;
 }
 
+/////////////////////////////////////////////////////////////////
+/*
+*   Metodo que realizara la suma de los bits de un conjunto de elementos
+*   pasados como parametros.
+*
+*   Versión 5 - ASM SSE3 - pshufb 128b
+*   
+*   \param array --> el conjunto de elementos que sumaremos
+*   \param len --> el tamaño del array
+*
+*   \return int --> resultado de la suma
+*/
+/////////////////////////////////////////////////////////////////
 int popCount5(int* array, int len)
 {
     int i;
@@ -92,21 +161,21 @@ int popCount5(int* array, int len)
     for(i=0;i<len;i+=4){
         asm("movdqu %[x]   ,%%xmm0  \n\t"
             "movdqa %%xmm0 ,%%xmm1  \n\t"
-            "movdqu %[m]   ,%%xmm0  \n\t"
+            "movdqu %[m]   ,%%xmm6  \n\t"
             "psrlw  $4     ,%%xmm1  \n\t"
             "pand   %%xmm6 ,%%xmm0  \n\t"
             "pand   %%xmm6 ,%%xmm1  \n\t"
 
-            "movdqu %[l]   ,%%xmm0 \n\t" //xmm2?
-            "movdqa %%xmm2 ,%%xmm3  \n\t"
+            "movdqu %[l]   ,%%xmm2     \n\t" //xmm2?
+            "movdqa %%xmm2 ,%%xmm3      \n\t"
             "pshufb %%xmm0 ,%%xmm2  \n\t"
             "pshufb %%xmm1 ,%%xmm3  \n\t"
 
-            "paddb   %%xmm3, %%xmm4 \n\t"
+            "paddb   %%xmm2, %%xmm3 \n\t"
             "pxor    %%xmm0, %%xmm0 \n\t"
             "psadbw  %%xmm0, %%xmm3 \n\t"
-            "movhlps %%xmm4, %%xmm0 \n\t"
-            "paddd   %%xmm4, %%xmm0 \n\t"
+            "movhlps %%xmm3, %%xmm0 \n\t"
+            "paddd   %%xmm3, %%xmm0 \n\t"   //suma de 
             "movd    %%xmm0, %[val] \n\t"
             : [val] "=r" (val)
             :   [x] "m" (array[i]),
@@ -135,15 +204,15 @@ void crono(int (*func)(), char* msg){
 
 int main()
 {
-    //int i;			// inicializar array
-    //for (i=0; i<SIZE; i++)	// se queda en cache
-	 //lista[i]=i;
+    int i;			// inicializar array
+    for (i=0; i<SIZE; i++)	// se queda en cache
+	 lista[i]=i;
 
     crono(popCount1, "popCount1 (en lenguaje C    )");
     crono(popCount2, "popCount2 (en lenguaje C    )");
     crono(popCount3, "popCount3 (en lenguaje C    )");
     crono(popCount4, "popCount4 (en lenguaje C    )");
-    crono(popCount5, "popCount4 (en lenguaje C    )");
+    crono(popCount5, "popCount5 (en lenguaje C    )");
 
     printf("N*(N+1)/2 = %d\n", (SIZE-1)*(SIZE/2)); /*OF*/
 
