@@ -1,5 +1,9 @@
-//  según la versión de gcc y opciones de optimización usadas, tal vez haga falta
-//  usar gcc –fno-omit-frame-pointer si gcc quitara el marco pila (%ebp)
+/////////////////////////////////////////////////////////////////
+/*
+*   Antonio David López Machado - Curso 2016/2017
+*   Práctica 3 - Ejercicio 2   
+*/
+/////////////////////////////////////////////////////////////////
 
 #include <stdio.h>	// para printf()
 #include <stdlib.h>	// para exit()
@@ -13,6 +17,19 @@ unsigned lista[SIZE];
 //unsigned lista[SIZE]={0x0,0x10204080,0x3590ac06,0x70b0d0e0,0xffffffff,0x12345678,0x9abcdef0,0xcafebeef};
 int resultado=0;
 
+/////////////////////////////////////////////////////////////////
+/*
+*   Metodo que realizara la suma de las paridades de un conjunto de elementos
+*   pasados como parametros.
+*
+*   Versión 1 - Usando un bucle for interno
+*   
+*   \param array --> el conjunto de elementos al que sumaremos su paridad
+*   \param len --> el tamaño del array
+*
+*   \return int --> resultado de la suma
+*/
+/////////////////////////////////////////////////////////////////
 int parityCount1(int* array, int len)
 {
     int  i,j,  res=0,result;
@@ -27,6 +44,20 @@ int parityCount1(int* array, int len)
     return res;
 }
 
+
+/////////////////////////////////////////////////////////////////
+/*
+*   Metodo que realizara la suma de las paridades de un conjunto de elementos
+*   pasados como parametros.
+*
+*   Versión 2 - Usando un bucle while interno
+*   
+*   \param array --> el conjunto de elementos al que sumaremos su paridad
+*   \param len --> el tamaño del array
+*
+*   \return int --> resultado de la suma
+*/
+/////////////////////////////////////////////////////////////////
 int parityCount2(int* array, int len)
 {
     int  i,j,  res=0,result;
@@ -42,6 +73,20 @@ int parityCount2(int* array, int len)
     return res;
 }
 
+/////////////////////////////////////////////////////////////////
+/*
+*   Metodo que realizara la suma de las paridades de un conjunto de elementos
+*   pasados como parametros.
+*
+*   Versión 3 - Usando un bucle while interno pero aplicando la mascara al 
+*               resultado total
+*   
+*   \param array --> el conjunto de elementos al que sumaremos su paridad
+*   \param len --> el tamaño del array
+*
+*   \return int --> resultado de la suma
+*/
+/////////////////////////////////////////////////////////////////
 int parityCount3(int* array, int len)
 {
     int  i,j,  res=0,result;
@@ -57,6 +102,19 @@ int parityCount3(int* array, int len)
     return res;
 }
 
+/////////////////////////////////////////////////////////////////
+/*
+*   Metodo que realizara la suma de las paridades de un conjunto de elementos
+*   pasados como parametros.
+*
+*   Versión 4- Usando un bucle while interno en ensamblador
+*   
+*   \param array --> el conjunto de elementos al que sumaremos su paridad
+*   \param len --> el tamaño del array
+*
+*   \return int --> resultado de la suma
+*/
+/////////////////////////////////////////////////////////////////
 int parityCount4(int* array, int len)
 {
     int  i,j,  res=0,val;
@@ -64,19 +122,32 @@ int parityCount4(int* array, int len)
     for (i=0; i<len; i++){
         val=0;
         x=array[i];
-        asm("ini3:               \n\t"
-            "xor %[x],%[v]       \n\t"
-            "shr %[x]            \n\t"
+        asm("ini3:           \n\t" //etiqueta
+            "xor %[x],%[v]   \n\t" //xor val,x
+            "shr %[x]        \n\t" //Desplazamiento a la derecha
 
-            "cmp $0,%[x]         \n\t"
-            "jne ini3            \n\t"
-            :  [v]"+r" (val)      // output-input
-            :  [x]  "r" (x)  );     // input
-        res+=val & 0x1;
+            "cmp $0,%[x]     \n\t" //Comparamos 0:x
+            "jne ini3        \n\t" // if !=0 goto ini3
+            :  [v]"+r" (val)       // output-input
+            :  [x]  "r" (x)  );    // input
+        res+=val & 0x1; //Aplicamos la mascara
     }
     return res;
 }
 
+/////////////////////////////////////////////////////////////////
+/*
+*   Metodo que realizara la suma de las paridades de un conjunto de elementos
+*   pasados como parametros.
+*
+*   Versión 5 - 
+*   
+*   \param array --> el conjunto de elementos al que sumaremos su paridad
+*   \param len --> el tamaño del array
+*
+*   \return int --> resultado de la suma
+*/
+/////////////////////////////////////////////////////////////////
 int parityCount5(int* array, int len)
 {
     int  i,j,  res=0,result,val;
@@ -85,9 +156,14 @@ int parityCount5(int* array, int len)
         result = 0;
         val=0;
         x=array[i];
-        for (j = 16; j > 0; j/=2) {
-            x ^= (x >> j);
-        }
+        asm(
+          "mov %[x], %%edx \n\t"
+          
+          "mov %%[dl], %[x] \n\t"
+          : [x]"+r" (x)
+          :
+          : "edx"
+        );
 
         res+=x & 0x1;
     }
