@@ -34,9 +34,9 @@ int resultado=0;
 int popCount1(int* array, int len)
 {
     int  i,j,  res=0,result;
-    for (i=0; i<len; i++){
+    for (i=0; i<len; i++){ //Recorremos el array de elementos
         result = 0;
-        for (j = 0; j < WSIZE; j++) {
+        for (j = 0; j < WSIZE; j++) { //Recorremos los bits de cada elemento
             unsigned mask = 1 << j;
             result += (array[i] & mask) != 0;
         }
@@ -91,14 +91,14 @@ int popCount3(int* array, int len)
     int  i,j,  res=0,result;
     for (i=0; i<len; i++){
         result = 0;
-        unsigned x=array[i];
-        asm("ini3:               \n\t"
-            "shr %[x]            \n\t"
-            "adc $0,%[r]    \n\t"
-            "cmp $0,%[x]         \n\t"
-            "jne ini3            \n\t"
-            :  [r]"+r" (result)      // output-input
-            :  [x]  "r" (x)  );     // input
+        unsigned x=array[i];      // elemento a comprobar
+        asm("ini3:          \n\t" //etiqueta
+            "shr %[x]       \n\t" // Desplazamiento a la derecha
+            "adc $0,%[r]    \n\t" //add carreo -> result
+            "cmp $0,%[x]    \n\t" //comp 0:x
+            "jne ini3       \n\t" // if !=0 goto ini3
+            :  [r]"+r" (result)   // output-input
+            :  [x]  "r" (x)  );   // input
         
         res+=result;
     }
@@ -160,22 +160,22 @@ int popCount5(int* array, int len)
 
     for(i=0;i<len;i+=4){
         asm("movdqu %[x]   ,%%xmm0  \n\t"
-            "movdqa %%xmm0 ,%%xmm1  \n\t"
-            "movdqu %[m]   ,%%xmm6  \n\t"
+            "movdqa %%xmm0 ,%%xmm1  \n\t" //dos copias de x
+            "movdqu %[m]   ,%%xmm6  \n\t" //máscara
             "psrlw  $4     ,%%xmm1  \n\t"
-            "pand   %%xmm6 ,%%xmm0  \n\t"
-            "pand   %%xmm6 ,%%xmm1  \n\t"
+            "pand   %%xmm6 ,%%xmm0  \n\t" // xmm0 - nibbles inferiores
+            "pand   %%xmm6 ,%%xmm1  \n\t" // xmm1 - nibbles superiores
 
-            "movdqu %[l]   ,%%xmm2     \n\t" //xmm2?
-            "movdqa %%xmm2 ,%%xmm3      \n\t"
-            "pshufb %%xmm0 ,%%xmm2  \n\t"
-            "pshufb %%xmm1 ,%%xmm3  \n\t"
+            "movdqu %[l]   ,%%xmm2  \n\t" // ..como pshufb sobreescribe LUT
+            "movdqa %%xmm2 ,%%xmm3  \n\t" // .. queremos 2 copias
+            "pshufb %%xmm0 ,%%xmm2  \n\t" // xmm2 = vector popcount inferiores
+            "pshufb %%xmm1 ,%%xmm3  \n\t" // xmm3 = vector popcount superiores
 
-            "paddb   %%xmm2, %%xmm3 \n\t"
-            "pxor    %%xmm0, %%xmm0 \n\t"
-            "psadbw  %%xmm0, %%xmm3 \n\t"
-            "movhlps %%xmm3, %%xmm0 \n\t"
-            "paddd   %%xmm3, %%xmm0 \n\t"   //suma de 
+            "paddb   %%xmm2, %%xmm3 \n\t" // xmm3 - vector popcount bytes
+            "pxor    %%xmm0, %%xmm0 \n\t" // xmm0 = 0,0,0,0
+            "psadbw  %%xmm0, %%xmm3 \n\t" // xmm3 = [pcnt bytes 0..7][pcnt bytes8..15]
+            "movhlps %%xmm3, %%xmm0 \n\t" // xmm0 = [        0      ][pcnt bytes0..7]
+            "paddd   %%xmm3, %%xmm0 \n\t" // xmm0 = [    no usado   ][pcnt bytes0..15]
             "movd    %%xmm0, %[val] \n\t"
             : [val] "=r" (val)
             :   [x] "m" (array[i]),
