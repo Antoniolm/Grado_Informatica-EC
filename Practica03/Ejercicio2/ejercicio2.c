@@ -156,6 +156,36 @@ int parityCount5(int* array, int len)
         result = 0;
         val=0;
         x=array[i];
+        for (j = 16; j > 0; j/=2) {
+            x ^= (x >> j);
+        }
+
+        res+=x & 0x1;
+    }
+    return res;
+}
+
+/////////////////////////////////////////////////////////////////
+/*
+*   Metodo que realizara la suma de las paridades de un conjunto de elementos
+*   pasados como parametros.
+*
+*   Versión 6 - 
+*   
+*   \param array --> el conjunto de elementos al que sumaremos su paridad
+*   \param len --> el tamaño del array
+*
+*   \return int --> resultado de la suma
+*/
+/////////////////////////////////////////////////////////////////
+int parityCount6(int* array, int len)
+{
+    int  i,j,  res=0,result,val;
+    unsigned x;
+    for (i=0; i<len; i++){
+        result = 0;
+        val=0;
+        x=array[i];
         asm(
           "mov %[x], %%edx \n\t"
           
