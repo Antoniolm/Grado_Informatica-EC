@@ -155,8 +155,8 @@ int popCount5(int* array, int len)
 {
     int i;
     int val,result=0;
-    int SSE_mask[] = {0x0f0f0f0f,0x0f0f0f0f,0x0f0f0f0f,0x0f0f0f0f};
-    int SSE_LUTb[] = {0x02010100,0x03020201,0x03020201,0x04030302};
+    int volatile SSE_mask[] = {0x0f0f0f0f,0x0f0f0f0f,0x0f0f0f0f,0x0f0f0f0f};
+    int volatile SSE_LUTb[] = {0x02010100,0x03020201,0x03020201,0x04030302};
 
     for(i=0;i<len;i+=4){
         asm("movdqu %[x]   ,%%xmm0  \n\t"
@@ -213,8 +213,6 @@ int main()
     crono(popCount3, "popCount3 (en lenguaje C    )");
     crono(popCount4, "popCount4 (en lenguaje C    )");
     crono(popCount5, "popCount5 (en lenguaje C    )");
-
-    printf("N*(N+1)/2 = %d\n", (SIZE-1)*(SIZE/2)); /*OF*/
 
     exit(0);
 }

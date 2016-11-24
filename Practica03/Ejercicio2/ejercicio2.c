@@ -190,18 +190,65 @@ int parityCount6(int* array, int len)
         result = 0;
         val=0;
         x=array[i];
-        for(j=16;j>0;j/2){
+        /*for(j=4;j>0;j--){
             asm(
               "mov %[x], %%edx \n\t"
               "shr %[j], %%ecx \n\t"
               "xor %%ecx, %%edx \n\t"
-              "setp %%[dl] \n\t"
-              "movzx %%[dl], %[x] \n\t"
+
+              "setp %%dl \n\t"
+              "movzx %%dl, %[x] \n\t"
               : [x]"+r" (x)
               : [j] "r" (j)
               : "edx"
             );
-        }
+        }*/
+
+            asm(
+              "mov %[x], %%edx \n\t"
+              "shr $4, %%ecx \n\t"
+              "xor %%ecx, %%edx \n\t"
+
+              "setp %%dl \n\t"
+              "movzx %%dl, %[x] \n\t"
+              : [x]"+r" (x)
+              : [j] "r" (j)
+              : "edx"
+            );
+            asm(
+              "mov %[x], %%edx \n\t"
+              "shr $3, %%ecx \n\t"
+              "xor %%ecx, %%edx \n\t"
+
+              "setp %%dl \n\t"
+              "movzx %%dl, %[x] \n\t"
+              : [x]"+r" (x)
+              : [j] "r" (j)
+              : "edx"
+            );
+            asm(
+              "mov %[x], %%edx \n\t"
+              "shr $2, %%ecx \n\t"
+              "xor %%ecx, %%edx \n\t"
+
+              "setp %%dl \n\t"
+              "movzx %%dl, %[x] \n\t"
+              : [x]"+r" (x)
+              : [j] "r" (j)
+              : "edx"
+            );
+            asm(
+              "mov %[x], %%edx \n\t"
+              "shr $1, %%ecx \n\t"
+              "xor %%ecx, %%edx \n\t"
+
+              "setp %%dl \n\t"
+              "movzx %%dl, %[x] \n\t"
+              : [x]"+r" (x)
+              : [j] "r" (j)
+              : "edx"
+            );
+
         res+=x & 0x1;
     }
     return res;
@@ -233,8 +280,6 @@ int main()
     crono(parityCount4, "parityCount4 (en lenguaje C    )");
     crono(parityCount5, "parityCount5 (en lenguaje C    )");
     crono(parityCount6, "parityCount6 (en lenguaje C    )");
-
-    printf("N*(N+1)/2 = %d\n", (SIZE-1)*(SIZE/2)); 
 
     exit(0);
 }
