@@ -178,6 +178,10 @@ int parityCount5(int* array, int len)
 *   \return int --> resultado de la suma
 */
 /////////////////////////////////////////////////////////////////
+
+//SETP  --> Set byte if parity (PF=1).
+//SETPE --> Set byte if parity even (PF=1).
+//SETPO --> Set byte if parity odd (PF=0).
 int parityCount6(int* array, int len)
 {
     int  i,j,  res=0,result,val;
@@ -186,15 +190,18 @@ int parityCount6(int* array, int len)
         result = 0;
         val=0;
         x=array[i];
-        asm(
-          "mov %[x], %%edx \n\t"
-          
-          "mov %%[dl], %[x] \n\t"
-          : [x]"+r" (x)
-          :
-          : "edx"
-        );
-
+        for(j=16;j>0;j/2){
+            asm(
+              "mov %[x], %%edx \n\t"
+              "shr %[j], %%ecx \n\t"
+              "xor %%ecx, %%edx \n\t"
+              "setp %%[dl] \n\t"
+              "movzx %%[dl], %[x] \n\t"
+              : [x]"+r" (x)
+              : [j] "r" (j)
+              : "edx"
+            );
+        }
         res+=x & 0x1;
     }
     return res;
@@ -225,6 +232,7 @@ int main()
     crono(parityCount3, "parityCount3 (en lenguaje C    )");
     crono(parityCount4, "parityCount4 (en lenguaje C    )");
     crono(parityCount5, "parityCount5 (en lenguaje C    )");
+    crono(parityCount6, "parityCount6 (en lenguaje C    )");
 
     printf("N*(N+1)/2 = %d\n", (SIZE-1)*(SIZE/2)); 
 
