@@ -178,10 +178,6 @@ int parityCount5(int* array, int len)
 *   \return int --> resultado de la suma
 */
 /////////////////////////////////////////////////////////////////
-
-//SETP  --> Set byte if parity (PF=1).
-//SETPE --> Set byte if parity even (PF=1).
-//SETPO --> Set byte if parity odd (PF=0).
 int parityCount6(int* array, int len)
 {
     int  i,j,  res=0,result,val;
@@ -190,59 +186,13 @@ int parityCount6(int* array, int len)
         result = 0;
         val=0;
         x=array[i];
-        /*for(j=4;j>0;j--){
-            asm(
-              "mov %[x], %%edx \n\t"
-              "shr %[j], %%ecx \n\t"
-              "xor %%ecx, %%edx \n\t"
-
-              "setp %%dl \n\t"
-              "movzx %%dl, %[x] \n\t"
-              : [x]"+r" (x)
-              : [j] "r" (j)
-              : "edx"
-            );
-        }*/
 
             asm(
               "mov %[x], %%edx \n\t"
-              "shr $4, %%ecx \n\t"
-              "xor %%ecx, %%edx \n\t"
-
-              "setp %%dl \n\t"
-              "movzx %%dl, %[x] \n\t"
-              : [x]"+r" (x)
-              : [j] "r" (j)
-              : "edx"
-            );
-            asm(
-              "mov %[x], %%edx \n\t"
-              "shr $3, %%ecx \n\t"
-              "xor %%ecx, %%edx \n\t"
-
-              "setp %%dl \n\t"
-              "movzx %%dl, %[x] \n\t"
-              : [x]"+r" (x)
-              : [j] "r" (j)
-              : "edx"
-            );
-            asm(
-              "mov %[x], %%edx \n\t"
-              "shr $2, %%ecx \n\t"
-              "xor %%ecx, %%edx \n\t"
-
-              "setp %%dl \n\t"
-              "movzx %%dl, %[x] \n\t"
-              : [x]"+r" (x)
-              : [j] "r" (j)
-              : "edx"
-            );
-            asm(
-              "mov %[x], %%edx \n\t"
-              "shr $1, %%ecx \n\t"
-              "xor %%ecx, %%edx \n\t"
-
-              "setp %%dl \n\t"
+              "shr %%edx \n\t"
+              "xor %[x], %%edx \n\t"
+              "xor %%dh, %%dl \n\t"
+              "setp o%%dl \n\t"
               "movzx %%dl, %[x] \n\t"
               : [x]"+r" (x)
               : [j] "r" (j)
