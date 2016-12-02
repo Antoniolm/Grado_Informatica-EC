@@ -9,10 +9,11 @@
 #include <stdlib.h>	// para exit()
 #include <string.h>	// para strncmp()/strlen()
 #include <sys/time.h>	// para gettimeofday(), struct timeval
-
-char password[]="abracadabla\n";
+//soyunabomba
+char password[]="sp{xrfhvukk\n";
 int tam=11;
-int  passcode  = 7777;
+//80987
+int  passcode  = 80877;
 
 void boom(){
 	printf("***************\n");
@@ -35,18 +36,15 @@ int main(){
 #define TLIM 5
 	struct timeval tv1,tv2;	// gettimeofday() secs-usecs
 
-
-	int i;
-	for(i=0;i<tam;i++){
-		password[i]+=i;
-	}
-	printf ("%s\n",password);
-	passcode= passcode-(tam*10);
-
 	gettimeofday(&tv1,NULL);
 
 	printf("Introduce la contraseña: ");
 	fgets(pass,SIZE,stdin);
+	int i;
+	for(i=0;i<tam;i++){
+		pass[i]+=i;
+	}
+	printf ("%s\n",pass);
 	if (strncmp(pass,password,strlen(password)))
 	    boom();
 
@@ -56,6 +54,8 @@ int main(){
 
 	printf("Introduce el código: ");
 	scanf("%i",&pasv);
+	pasv=pasv -(tam*10);
+	
 	if (pasv!=passcode) boom();
 
 	gettimeofday(&tv1,NULL);
