@@ -11,6 +11,7 @@
 #include <sys/time.h>	// para gettimeofday(), struct timeval
 
 char password[]="abracadabra\n";
+int tam=11;
 int  passcode  = 7777;
 
 void boom(){
@@ -33,6 +34,13 @@ int main(){
 	int  pasv;
 #define TLIM 5
 	struct timeval tv1,tv2;	// gettimeofday() secs-usecs
+
+
+	int i;
+	for(i=0;i<tam<i++)
+		password[0]+=i;
+
+	passcode= passcode-(tam*10);
 
 	gettimeofday(&tv1,NULL);
 
