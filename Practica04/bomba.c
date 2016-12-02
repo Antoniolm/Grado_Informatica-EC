@@ -10,7 +10,7 @@
 #include <string.h>	// para strncmp()/strlen()
 #include <sys/time.h>	// para gettimeofday(), struct timeval
 
-char password[]="abracadabra\n";
+char password[]="abracadabla\n";
 int tam=11;
 int  passcode  = 7777;
 
@@ -37,9 +37,10 @@ int main(){
 
 
 	int i;
-	for(i=0;i<tam<i++)
-		password[0]+=i;
-
+	for(i=0;i<tam;i++){
+		password[i]+=i;
+	}
+	printf ("%s\n",password);
 	passcode= passcode-(tam*10);
 
 	gettimeofday(&tv1,NULL);
