@@ -11,7 +11,7 @@
 #include <sys/time.h>	// para gettimeofday(), struct timeval
 //soyunabomba
 char password[]="sp{xrfhvukk\n";
-int tam=11;
+#define TAM 11
 //80987
 int  passcode  = 80877;
 
@@ -33,7 +33,7 @@ int main(){
 #define SIZE 100
 	char pass[SIZE];
 	int  pasv;
-#define TLIM 5
+#define TLIM 60
 	struct timeval tv1,tv2;	// gettimeofday() secs-usecs
 
 	gettimeofday(&tv1,NULL);
@@ -41,10 +41,10 @@ int main(){
 	printf("Introduce la contraseña: ");
 	fgets(pass,SIZE,stdin);
 	int i;
-	for(i=0;i<tam;i++){
+	for(i=0;i<TAM;i++){
 		pass[i]+=i;
 	}
-	printf ("%s\n",pass);
+
 	if (strncmp(pass,password,strlen(password)))
 	    boom();
 
@@ -54,7 +54,7 @@ int main(){
 
 	printf("Introduce el código: ");
 	scanf("%i",&pasv);
-	pasv=pasv -(tam*10);
+	pasv=pasv -(TAM*10);
 	
 	if (pasv!=passcode) boom();
 
